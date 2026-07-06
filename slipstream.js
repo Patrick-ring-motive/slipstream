@@ -19,7 +19,11 @@ function slipstream(inputStream) {
     if (!dataLines.length) return;
 
     const dataStr = dataLines.join('\n');
-    if (dataStr === '[DONE]') { closed = true; controller.close(); return; }
+    if (dataStr === '[DONE]') {
+      closed = true;
+      controller.close();
+      return;
+    }
 
     let parsed;
     try {
@@ -72,7 +76,10 @@ function slipstream(inputStream) {
   return new ReadableStream({
     async pull(controller) {
       while (!closed) {
-        const { done, value } = await reader.read();
+        const {
+          done,
+          value
+        } = await reader.read();
 
         if (done) {
           buffer += decoder.decode();
@@ -81,7 +88,9 @@ function slipstream(inputStream) {
           return;
         }
 
-        buffer += decoder.decode(value, { stream: true });
+        buffer += decoder.decode(value, {
+          stream: true
+        });
         drainBuffer(controller);
         return; // let stream consumer pull again; buffer may still hold partial event
       }
